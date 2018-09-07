@@ -1,0 +1,8 @@
+numInputs: 32
+numExperimentRepeats: 10
+numHidden: 16
+outputFile: <_io.TextIOWrapper name='data/output18.txt' mode='w' encoding='UTF-8'>
+numOutputs: 32
+numInterventions: 10
+method: catastrophicForgetting
+Base population: 20

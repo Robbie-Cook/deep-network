@@ -1,0 +1,1 @@
+numInputs: 32%noutputFile: <_io.TextIOWrapper name='data/output.txt' mode='w' encoding='UTF-8'>%nnumInterventions: 10%nnumOutputs: 32%nnumHidden: 16%nmethod: catastrophicForgetting%nBase population: 20%nnumExperimentRepeats: 10%n
