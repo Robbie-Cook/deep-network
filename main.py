@@ -45,7 +45,7 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
         print("Caution: using auxilliary network")
 
         aux = keras.Sequential()
-        aux.add(keras.layers.Dense())
+        # aux.add(keras.layers.Dense())
 
 
 
