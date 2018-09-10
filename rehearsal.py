@@ -102,7 +102,7 @@ def sweepTrain(model, itemsLearned, intervention):
             if epochs % settings.printRate == 0:
                 print("Training...", loss, 'Epochs: {}/{}'.format(epochs, settings.maxEpochs))
     else: 
-        while loss > settings.minimumGoodness and epochs < settings.maxEpochs: # MAE
+        while loss > settings.minimumMAE and epochs < settings.maxEpochs: # MAE
 
             indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
             buffer = [itemsLearned[i] for i in indices]
