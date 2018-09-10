@@ -20,7 +20,6 @@ import myio
 Parse arguments
 """
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--method')
 parser.add_argument('--numHiddenLayers')
@@ -41,7 +40,17 @@ summedAverages = np.array([0.0 for i in range(settings.numInterventions+1)])
 
 for i in range(settings.numExperimentRepeats): # repeat entire experiment
 
-    # Make a network
+    # Implement the auxilliary network if needed
+    if settings.auxNetwork:
+        print("Caution: using auxilliary network")
+
+        aux = keras.Sequential()
+        
+
+
+
+
+    # Make the main network
     model = keras.Sequential()
 
     model.add(keras.layers.Dense(settings.numInputs, activation='sigmoid'))
@@ -66,7 +75,10 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
         numTasks=settings.numTotalTasks
     )
     if settings.dataFile != None:
+        print("Caution, using datafile", settings.dataFile)
         mytask = task.taskFromFile(settings.dataFile)
+
+    # print("Task", mytask)
 
     # Intervening tasks
     interventions = task.createTasks(

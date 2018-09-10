@@ -3,6 +3,7 @@ import copy
 import numpy as np
 import metrics
 import settings
+import math
 
 """
 Task.py
@@ -20,17 +21,26 @@ i.e. a mapping of inputs to outputs
 e.g. autoassociative: [1,0] -> [1,0]
      heteroassociative: [1,0] -> [0,0]
 
+If the classifications parameter is a list (e.g. [0,1,2]) and not `None`, then the classes shall be those
+given in the list, assigned randomly
+
 @return: Returns a dictionary with input and output e.g. {'input': [0,1,0], 'output': [1,0,0]}
 """
 def createTask(numInputs=settings.numInputs, 
-                numOutputs=settings.numOutputs):
+                numOutputs=settings.numOutputs,
+                classifications=settings.classifications):
     task = {}
     task['input'] = np.array([random.randrange(0,2) for i in range(numInputs)])
 
-    if settings.autoassociative:
-        task['teacher'] = copy.copy(task['input'])
+    if classifications != None:
+        assert (len(classifications) == 1 and numOutputs == 1) \
+                or math.ceil(math.log10(len(classifications))) == numOutputs , "Number of outputs must be correct for classification"
+        task['teacher'] = np.array([random.randrange(0,len(classifications))])
     else:
-         task['teacher'] = np.array([random.randrange(0,2) for i in range(numOutputs)])
+        if settings.autoassociative:
+            task['teacher'] = copy.copy(task['input'])
+        else:
+            task['teacher'] = np.array([random.randrange(0,2) for i in range(numOutputs)])
 
     return task
 
@@ -55,7 +65,7 @@ Create a set of tasks using createTask()
 def createTasks(
                 numTasks,
                 numInputs=settings.numInputs,
-                 numOutputs=settings.numOutputs):
+                numOutputs=settings.numOutputs):
     assert numTasks > 0, "Number of tasks must be greater than 0"
     return [createTask(numInputs, numOutputs) for i in range(numTasks)]
 
