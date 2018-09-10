@@ -29,5 +29,5 @@ initialMinimumGoodness = minimumGoodness
 
 stepSize = 2000 # The number of epochs to train before checking & printing
 printRate = 2000 # How many steps to train for before printing
-maxEpochs = 50000
+maxEpochs = 200000
 initialMaxEpochs = maxEpochs
