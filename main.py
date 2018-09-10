@@ -123,7 +123,8 @@ data = {
     'Base population': settings.numTotalTasks,
     'numInterventions' : settings.numInterventions,
     'numExperimentRepeats': settings.numExperimentRepeats,
-    'numHiddenLayers': settings.numHiddenLayers
+    'numHiddenLayers': settings.numHiddenLayers,
+    'reluLayers': settings.reluLayers
 }
 
 for i in data.keys():

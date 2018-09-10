@@ -21,6 +21,8 @@ reluLayers = False
 learning_rate = 0.3
 momentum = 0.5
 loss = "mse"
+metricFunction = metrics.getMAE # Which metric function to use -- goodness cannot be used for non-binary
+                                # input datasets
 
 numTotalTasks = 20 # size of initial population
 numInterventions = 10
@@ -35,5 +37,3 @@ printRate = 2000 # How many steps to train for before printing
 maxEpochs = 50000
 initialMaxEpochs = maxEpochs
 
-metricFunction = metrics.getMAE # Which metric function to use -- goodness cannot be used for non-binary
-                                # input datasets

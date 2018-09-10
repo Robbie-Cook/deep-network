@@ -1,8 +1,0 @@
-numHidden: 16
-numInterventions: 10
-numInputs: 32
-outputFile: <_io.TextIOWrapper name='data/output20.txt' mode='w' encoding='UTF-8'>
-method: sweep
-numExperimentRepeats: 10
-numOutputs: 32
-Base population: 20
