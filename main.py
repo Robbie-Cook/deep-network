@@ -5,7 +5,8 @@ from tensorflow import keras
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import subprocess
+import argparse
+
 
 # Import self-made files
 import task
@@ -16,8 +17,21 @@ import myio
 
 
 """
-Settings
+Parse arguments
 """
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--method')
+parser.add_argument('--numHiddenLayers')
+
+args = parser.parse_args()
+if(args.method != None):
+    settings.method = args.method
+
+if(args.numHiddenLayers != None):
+    settings.numHiddenLayers = int(args.numHiddenLayers)
+
 
 """
 Main routine
@@ -32,17 +46,16 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
 
     model.add(keras.layers.Dense(settings.numInputs, activation='sigmoid'))
     for layer in range(settings.numHiddenLayers):
-        model.add(keras.layers.Dense(settings.numHidden, activation='sigmoid'))
+        model.add(keras.layers.Dense(settings.numHidden, activation=('sigmoid' if not settings.reluLayers else 'relu')))
     model.add(keras.layers.Dense(settings.numOutputs, activation='sigmoid'))
 
     model.compile(
-        optimizer=tf.train.MomentumOptimizer(
+        tf.train.MomentumOptimizer(
             learning_rate=settings.learning_rate,
             momentum=settings.momentum,
             use_nesterov=False,
-            
         ),
-        loss = 'mse',
+        loss = settings.loss,
         metrics = []
     )
 
@@ -52,6 +65,8 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
         numOutputs=settings.numOutputs,
         numTasks=settings.numTotalTasks
     )
+    if settings.dataFile != None:
+        mytask = task.taskFromFile(settings.dataFile)
 
     # Intervening tasks
     interventions = task.createTasks(

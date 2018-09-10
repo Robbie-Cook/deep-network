@@ -83,9 +83,10 @@ def sweepTrain(model, itemsLearned, intervention):
     epochs = 0
     while goodness < settings.minimumGoodness and epochs < settings.maxEpochs:
 
-        indices = [random.randrange(0,len(itemsLearned)) for i in range(3)]
+        indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
         buffer = [itemsLearned[i] for i in indices]
         buffer.append(intervention)
+        random.shuffle(buffer)
 
         X = np.array([b['input'] for b in buffer])
         Y = np.array([b['teacher'] for b in buffer])

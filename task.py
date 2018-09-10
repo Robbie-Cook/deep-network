@@ -34,6 +34,20 @@ def createTask(numInputs=settings.numInputs,
 
     return task
 
+"""
+Make a new task from a file
+"""
+def taskFromFile(datafile):
+    myfile = open(datafile)
+    mylist = myfile.readlines()
+    mylist = [l.replace("\n","").split() for l in mylist]
+    task = {}
+    task['input'] = [list(m[0:-1]) for m in mylist]
+    task['teacher'] = [list(m[-1]) for m in mylist]
+
+    # for i in len('input')
+    print(task)
+
 
 """
 Create a set of tasks using createTask()
