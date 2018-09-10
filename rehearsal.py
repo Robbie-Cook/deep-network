@@ -81,21 +81,40 @@ If the itemsLearned are pseudoItems, then pseudoRehearsal is implemented
 def sweepTrain(model, itemsLearned, intervention):
     X_intervention = np.array([intervention['input']])
     Y_intervention = np.array([intervention['teacher']])
-    goodness = settings.metricFunction(model.predict(X_intervention),Y_intervention)
+    loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
     epochs = 0
-    while goodness < settings.minimumGoodness and epochs < settings.maxEpochs:
+    if settings.metricFunction == metrics.getGoodness: # goodness
 
-        indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
-        buffer = [itemsLearned[i] for i in indices]
-        buffer.append(intervention)
-        random.shuffle(buffer)
+        while loss < settings.minimumGoodness and epochs < settings.maxEpochs:
 
-        X = np.array([b['input'] for b in buffer])
-        Y = np.array([b['teacher'] for b in buffer])
-        model.train_on_batch(X,Y)
+            indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
+            buffer = [itemsLearned[i] for i in indices]
+            buffer.append(intervention)
+            random.shuffle(buffer)
 
-        epochs+=1
-        if epochs % settings.stepSize == 0:
-            goodness = settings.metricFunction(model.predict(X_intervention),Y_intervention)
-        if epochs % settings.printRate == 0:
-            print("Training...", goodness, 'Epochs: {}/{}'.format(epochs, settings.maxEpochs))
+            X = np.array([b['input'] for b in buffer])
+            Y = np.array([b['teacher'] for b in buffer])
+            model.train_on_batch(X,Y)
+
+            epochs+=1
+            if epochs % settings.stepSize == 0:
+                loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
+            if epochs % settings.printRate == 0:
+                print("Training...", loss, 'Epochs: {}/{}'.format(epochs, settings.maxEpochs))
+    else: 
+        while loss > settings.minimumGoodness and epochs < settings.maxEpochs: # MAE
+
+            indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
+            buffer = [itemsLearned[i] for i in indices]
+            buffer.append(intervention)
+            random.shuffle(buffer)
+
+            X = np.array([b['input'] for b in buffer])
+            Y = np.array([b['teacher'] for b in buffer])
+            model.train_on_batch(X,Y)
+
+            epochs+=1
+            if epochs % settings.stepSize == 0:
+                loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
+            if epochs % settings.printRate == 0:
+                print("Training...", loss, 'Epochs: {}/{}'.format(epochs, settings.maxEpochs))

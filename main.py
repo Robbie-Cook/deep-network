@@ -55,6 +55,7 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
 
     model.add(keras.layers.Dense(settings.numInputs, activation='sigmoid'))
     for layer in range(settings.numHiddenLayers):
+        model.add(keras.layers.Dropout(settings.dropout)) # Dropout
         model.add(keras.layers.Dense(settings.numHidden, activation=('sigmoid' if not settings.reluLayers else 'relu')))
     model.add(keras.layers.Dense(settings.numOutputs, activation='sigmoid'))
 
