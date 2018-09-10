@@ -45,7 +45,7 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
         print("Caution: using auxilliary network")
 
         aux = keras.Sequential()
-        
+        aux.add(keras.layers.Dense())
 
 
 
@@ -122,6 +122,7 @@ data = {
     'Base population': settings.numTotalTasks,
     'numInterventions' : settings.numInterventions,
     'numExperimentRepeats': settings.numExperimentRepeats,
+    'numHiddenLayers': settings.numHiddenLayers
 }
 
 for i in data.keys():
