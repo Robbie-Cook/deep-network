@@ -51,12 +51,27 @@ def taskFromFile(datafile):
     myfile = open(datafile)
     mylist = myfile.readlines()
     mylist = [l.replace("\n","").split() for l in mylist]
-    task = {}
-    task['input'] = [list(m[0:-1]) for m in mylist]
-    task['teacher'] = [list(m[-1]) for m in mylist]
+   
+    tasks = []
+    for i,m in enumerate(mylist):
+        task = {}
+        task['input'] = [list(m[0:-1]) for m in mylist]
+        task['teacher'] = [list(m[-1]) for m in mylist]
+        tasks.append(task)
+
+    print(task)
+    # Convert to numbers
+    for i in range(len(task['input'])):
+        for j in range(len(task['input'][i])):
+            task['input'][i][j] = float(task['input'][i][j])
+
+    for i in range(len(task['teacher'])):
+        for j in range(len(task['teacher'][i])):
+            task['teacher'][i][j] = float(task['teacher'][i][j])
+
 
     # for i in len('input')
-    print(task)
+    return task
 
 
 """
@@ -84,22 +99,22 @@ def train(model,
     Y = np.array([tasks[i]['teacher'] for i in range(len(tasks))]) # Teaching outputs
 
     epochs = 0
-    goodness = metrics.getGoodness(model.predict(X), Y) 
+    goodness = settings.metricFunction(model.predict(X), Y) 
     
     x_metric, y_metric = None, None
     if metricsTask: # get goodness from the metric task
         x_metric = np.array([metricsTask['input']])
         y_metric = np.array([metricsTask['teacher']])
-        goodness = metrics.getGoodness(model.predict(x_metric), y_metric)
+        goodness = settings.metricFunction(model.predict(x_metric), y_metric)
         
     while(goodness < minimumGoodness and epochs < maxEpochs):
         for i in range(settings.stepSize):
             model.train_on_batch(X,Y)
         
         if metricsTask != None:
-            goodness = metrics.getGoodness(model.predict(x_metric), y_metric)
+            goodness = settings.metricFunction(model.predict(x_metric), y_metric)
         else:
-            goodness = metrics.getGoodness(model.predict(X), Y)
+            goodness = settings.metricFunction(model.predict(X), Y)
 
         epochs+= settings.stepSize
 

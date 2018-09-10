@@ -75,22 +75,23 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
         numTasks=settings.numTotalTasks
     )
     if settings.dataFile != None:
-        print("Caution, using datafile", settings.dataFile)
+        print("Caution: using datafile", settings.dataFile)
         mytask = task.taskFromFile(settings.dataFile)
 
     # print("Task", mytask)
 
     # Intervening tasks
-    interventions = task.createTasks(
-        numInputs=settings.numInputs,
-        numOutputs=settings.numOutputs,
-        numTasks=settings.numInterventions
-    )
+    if (settings.numInterventions > 0):
+        interventions = task.createTasks(
+            numInputs=settings.numInputs,
+            numOutputs=settings.numOutputs,
+            numTasks=settings.numInterventions
+        )
     
     print("-"*30)
     print("Beginning initial training on base population:")
     task.train(model=model, tasks=mytask, maxEpochs=settings.initialMaxEpochs, minimumGoodness=settings.initialMinimumGoodness)
-
+    
     goodnesses = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions)
     
 

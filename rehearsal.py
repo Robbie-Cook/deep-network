@@ -79,7 +79,7 @@ If the itemsLearned are pseudoItems, then pseudoRehearsal is implemented
 def sweepTrain(model, itemsLearned, intervention):
     X_intervention = np.array([intervention['input']])
     Y_intervention = np.array([intervention['teacher']])
-    goodness = metrics.getGoodness(model.predict(X_intervention),Y_intervention)
+    goodness = settings.metricFunction(model.predict(X_intervention),Y_intervention)
     epochs = 0
     while goodness < settings.minimumGoodness and epochs < settings.maxEpochs:
 
@@ -94,6 +94,6 @@ def sweepTrain(model, itemsLearned, intervention):
 
         epochs+=1
         if epochs % settings.stepSize == 0:
-            goodness = metrics.getGoodness(model.predict(X_intervention),Y_intervention)
+            goodness = settings.metricFunction(model.predict(X_intervention),Y_intervention)
         if epochs % settings.printRate == 0:
             print("Training...", goodness, 'Epochs: {}/{}'.format(epochs, settings.maxEpochs))

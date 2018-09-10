@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 """
 Metrics.py
@@ -41,3 +42,22 @@ def getTaskGoodness(model, tasks):
     Y = np.array([tasks[i]['teacher'] for i in range(len(tasks))]) # Teaching outputs
 
     return getGoodness(predicted=model.predict(X), expected=Y)
+
+"""
+Method which gets the MAE of the network -- takes the same inputs as getGoodness
+"""
+def getMAE(predicted, expected):
+    assert len(predicted) == len(expected), "Predicted and expected must be the same length"
+
+    sum = 0
+    for i in range(len(predicted)): # Get mean MAE
+
+        local_sum = 0
+        assert len(predicted[i]) == len(expected[i]), \
+        "Rows of predicted and expected must be the same length"
+
+        for j in range(len(predicted[i])): # get actual MAE
+            local_sum += abs(predicted[i][j]-expected[i][j])
+        sum += local_sum/len(predicted[i])
+    
+    return sum/len(predicted) # Return the mean MAE
