@@ -2,7 +2,7 @@
 Settings.py -- Project settings
 """
 
-method = 'catastrophicForgetting'
+method = 'pseudoSweep'
 bufferSize = 4 # Buffer size for sweep and pseudosweep
 
 auxNetwork = False
@@ -10,7 +10,7 @@ auxNetwork = False
 numInputs = 32
 numHidden = 16
 numOutputs = 32
-numHiddenLayers = 5
+numHiddenLayers = 1
 dataFile = None #'tasks/XOR.txt' # None for random task
 classifications = None #[0,1]# `None` for regression, otherwise a list of classes for classifications
 
