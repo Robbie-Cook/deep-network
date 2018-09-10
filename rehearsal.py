@@ -22,12 +22,14 @@ def rehearse(model, method, tasks, interventions):
     methods = ['catastrophicForgetting', 'pseudoSweep', 'sweep']
     assert method in methods, "rehearsal method not supported"
 
-    initialGoodness = metrics.getTaskGoodness(model, tasks)
+    X = [t['input'] for t in tasks]
+    Y = [t['teacher'] for t in tasks]
+    initialGoodness = metrics.getTaskQuality(model, tasks)
 
     print("-"*30)
     print("Starting rehearsal:", method)
     print()
-    print("Initial goodness", initialGoodness)
+    print("Initial loss {}: {}".format(settings.metric, initialGoodness))
     print()
 
     goodnesses = [initialGoodness]
@@ -45,9 +47,9 @@ def rehearse(model, method, tasks, interventions):
             sweepTrain(model=model, itemsLearned=learned, intervention=intervention)
             learned.append(intervention)
 
-        goodness = metrics.getTaskGoodness(model, tasks)
+        goodness = metrics.getTaskQuality(model, tasks)
         goodnesses.append(goodness)
-        print("\nGoodness after {} round {}: {}".format(method, i+1, goodness))
+        print("\nLoss {} after {} round {}: {}".format(settings.metric, method, i+1, goodness))
         print()
     return goodnesses
         

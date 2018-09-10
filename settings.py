@@ -2,17 +2,15 @@
 Settings.py -- Project settings
 """
 
-import metrics
-
 method = 'sweep'
 bufferSize = 4 # Buffer size for sweep and pseudosweep
 
-auxNetwork = True
+auxNetwork = False
 
 numInputs = 32
 numHidden = 16
 numOutputs = 32
-numHiddenLayers = 10
+numHiddenLayers = 1
 dataFile = None #'tasks/XOR.txt' # None for random task
 classifications = None #[0,1]# `None` for regression, otherwise a list of classes for classifications
 
@@ -20,9 +18,10 @@ reluLayers = False
 
 learning_rate = 0.3
 momentum = 0.5
-loss = "mse"
-metricFunction = metrics.getMAE # Which metric function to use -- goodness cannot be used for non-binary
+loss = "mse" # Loss function 
+metric = "mae" # Which metric function to use -- goodness cannot be used for non-binary
                                 # input datasets
+metricFunction = None
 
 numTotalTasks = 20 # size of initial population
 numInterventions = 10
@@ -30,6 +29,7 @@ numExperimentRepeats = 1 # How many runs of the experiment, *not* repeats (need 
 autoassociative = False
 
 minimumGoodness = 0.95
+minimumMAE = 0.01
 initialMinimumGoodness = minimumGoodness
 
 stepSize = 2000 # The number of epochs to train before checking & printing

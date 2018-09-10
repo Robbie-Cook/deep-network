@@ -1,6 +1,6 @@
 """
 Testing file
 """
-import argparse
+import metrics
 
-print(2**4)
+metrics.getGoodness

@@ -99,25 +99,44 @@ def train(model,
     Y = np.array([tasks[i]['teacher'] for i in range(len(tasks))]) # Teaching outputs
 
     epochs = 0
-    goodness = settings.metricFunction(model.predict(X), Y) 
+    loss = settings.metricFunction(model.predict(X), Y) 
     
     x_metric, y_metric = None, None
     if metricsTask: # get goodness from the metric task
         x_metric = np.array([metricsTask['input']])
         y_metric = np.array([metricsTask['teacher']])
-        goodness = settings.metricFunction(model.predict(x_metric), y_metric)
-        
-    while(goodness < minimumGoodness and epochs < maxEpochs):
-        for i in range(settings.stepSize):
-            model.train_on_batch(X,Y)
-        
-        if metricsTask != None:
-            goodness = settings.metricFunction(model.predict(x_metric), y_metric)
-        else:
-            goodness = settings.metricFunction(model.predict(X), Y)
+        loss = settings.metricFunction(model.predict(x_metric), y_metric)
+    
+    assert settings.metricFunction in [metrics.getGoodness, metrics.getMAE], \
+            "Metric function must be defined"
+    if settings.metricFunction == metrics.getGoodness: # If goodness is the metric    
+        while(loss < minimumGoodness and epochs < maxEpochs):
+            for i in range(settings.stepSize):
+                model.train_on_batch(X,Y)
+            
+            if metricsTask != None:
+                loss = settings.metricFunction(model.predict(x_metric), y_metric)
+            else:
+                loss = settings.metricFunction(model.predict(X), Y)
 
-        epochs+= settings.stepSize
+            epochs+= settings.stepSize
 
-        if epochs % (settings.printRate) == 0:
-            print("Training task.... Goodness: {}, Epochs: {}/{}".format(goodness, epochs, maxEpochs))
-    print("Finished training!.... Goodness: {}, Epochs: {}/{}".format(goodness, epochs, maxEpochs))
+            if epochs % (settings.printRate) == 0:
+                print("Training task.... Goodness: {}, Epochs: {}/{}".format(loss, epochs, maxEpochs))
+
+    elif settings.metricFunction == metrics.getMAE:
+        while(loss > settings.minimumMAE and epochs < maxEpochs):
+            for i in range(settings.stepSize):
+                model.train_on_batch(X,Y)
+            
+            if metricsTask != None:
+                loss = settings.metricFunction(model.predict(x_metric), y_metric)
+            else:
+                loss = settings.metricFunction(model.predict(X), Y)
+
+            epochs+= settings.stepSize
+
+            if epochs % (settings.printRate) == 0:
+                print("Training task.... MAE: {}, Epochs: {}/{}".format(loss, epochs, maxEpochs))
+    
+    print("Finished training!.... Loss: {}, Epochs: {}/{}".format(loss, epochs, maxEpochs))
