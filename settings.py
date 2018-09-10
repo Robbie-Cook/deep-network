@@ -4,6 +4,7 @@ Settings.py -- Project settings
 
 method = 'sweep'
 
+
 bufferSize = 4 # Buffer size for sweep and pseudosweep
 
 numInputs = 32
