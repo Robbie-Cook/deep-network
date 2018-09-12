@@ -66,7 +66,7 @@ item {
 }
 """
 def createPsuedoItem(model):
-    # Generate random numbers 
+    # Generate random numbers  
     item = task.createTask()
     test = np.array([item['input']])
     item['teacher'] = model.predict(test)[0]
@@ -86,36 +86,39 @@ def sweepTrain(model, itemsLearned, intervention):
     epochs = 0
     if settings.metricFunction == metrics.getGoodness: # goodness
 
-        while loss < settings.minimumGoodness and epochs < settings.maxEpochs:
+        while loss < settings.minimumGoodness:
+            sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
+            epochs+=settings.bufferRefreshRate
 
-            indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
-            buffer = [itemsLearned[i] for i in indices]
-            buffer.append(intervention)
-            random.shuffle(buffer)
-
-            X = np.array([b['input'] for b in buffer])
-            Y = np.array([b['teacher'] for b in buffer])
-            model.train_on_batch(X,Y)
-
-            epochs+=1
             if epochs % settings.stepSize == 0:
                 loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
             if epochs % settings.printRate == 0:
-                print("Training...", loss, 'Epochs: {}/{}'.format(epochs, settings.maxEpochs))
+                print("Training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
     else: 
-        while loss > settings.minimumMAE and epochs < settings.maxEpochs: # MAE
+        while loss > settings.minimumMAE: # MAE
+            sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
+            epochs+=settings.bufferRefreshRate
 
-            indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
-            buffer = [itemsLearned[i] for i in indices]
-            buffer.append(intervention)
-            random.shuffle(buffer)
-
-            X = np.array([b['input'] for b in buffer])
-            Y = np.array([b['teacher'] for b in buffer])
-            model.train_on_batch(X,Y)
-
-            epochs+=1
             if epochs % settings.stepSize == 0:
                 loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
             if epochs % settings.printRate == 0:
-                print("Training...", loss, 'Epochs: {}/{}'.format(epochs, settings.maxEpochs))
+                print("Training... Loss on intervention: {}, , epochs: {}".format(loss, epochs))
+
+
+"""
+The inner function for sweepTrain
+"""
+def sweep_run_epoch(model, itemsLearned, intervention):
+    indices = [random.randrange(0,len(itemsLearned)) for i in range(settings.bufferSize-1)]
+    buffer = [itemsLearned[i] for i in indices]
+    buffer.append(intervention)
+    random.shuffle(buffer)
+
+    X = np.array([b['input'] for b in buffer])
+    Y = np.array([b['teacher'] for b in buffer])
+
+    # Train for buffer refresh rate
+    # Make sure buffer is learned before moving on
+    for i in range(settings.bufferRefreshRate):
+        model.train_on_batch(X,Y)
+

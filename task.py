@@ -87,6 +87,17 @@ def createTasks(
     return [createTask(numInputs, numOutputs) for i in range(numTasks)]
 
 """
+Make tasks based on an X,Y array given
+"""
+def makeTaskFromXY(X,Y):
+    tasks = []
+    for i in range(len(X)):
+        tasks.append({'input': X[i], 'teacher': Y[i]})
+
+    return tasks
+
+
+"""
 Train a task in the network
 
 @param metricsTask -- if given, train until this task reaches a certain goodness

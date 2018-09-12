@@ -15,8 +15,14 @@ import metrics
 import rehearsal
 import settings
 import myio
-import mainNetwork
+import main_network
+import cnn_network
 
+
+"""
+Which network to use -- important
+"""
+network = main_network
 
 """
 Parse arguments
@@ -31,7 +37,8 @@ if(args.method != None):
     settings.method = args.method
 
 if(args.numHiddenLayers != None):
-    settings.numHiddenLayers = int(args.numHiddenLayers)
+    settings.method = int(args.numHiddenLayers)
+
 
 
 """
@@ -42,23 +49,15 @@ summedAverages = np.array([0.0 for i in range(settings.numInterventions+1)])
 
 for i in range(settings.numExperimentRepeats): # repeat entire experiment
 
-    # Implement the auxilliary network if needed
-    if settings.auxNetwork:
-        print("Caution: using auxilliary network")
 
-        aux = keras.Sequential()
-        # aux.add(keras.layers.Dense())
-
-
-
-
-    # Make the main network
-    model = mainNetwork.model
+    # Make the network
+    model = network.model
 
     # Make a bunch of tasks for the network to learn
     # If there is a file given, learn tasks from the file
     mytask = None
     interventions = []
+
     if settings.dataFile != None:
         print("Using datafile", settings.dataFile, "as input")
         mytask = task.taskFromFile(settings.dataFile)
@@ -126,7 +125,6 @@ data = {
     'numInterventions' : settings.numInterventions,
     'numExperimentRepeats': settings.numExperimentRepeats,
     'numHiddenLayers': settings.numHiddenLayers,
-    'reluLayers': settings.reluLayers
 }
 
 for i in data.keys():
