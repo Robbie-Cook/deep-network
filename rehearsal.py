@@ -66,6 +66,7 @@ item {
 }
 """
 def createPsuedoItem(model):
+    # Generate random numbers 
     item = task.createTask()
     test = np.array([item['input']])
     item['teacher'] = model.predict(test)[0]

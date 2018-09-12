@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import argparse
+import random
 
 
 # Import self-made files
@@ -14,6 +15,7 @@ import metrics
 import rehearsal
 import settings
 import myio
+import mainNetwork
 
 
 """
@@ -51,43 +53,42 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
 
 
     # Make the main network
-    model = keras.Sequential()
-
-    model.add(keras.layers.Dense(settings.numInputs, activation='sigmoid'))
-    for layer in range(settings.numHiddenLayers):
-        model.add(keras.layers.Dropout(settings.dropout)) # Dropout
-        model.add(keras.layers.Dense(settings.numHidden, activation=('sigmoid' if not settings.reluLayers else 'relu')))
-    model.add(keras.layers.Dense(settings.numOutputs, activation='sigmoid'))
-
-    model.compile(
-        tf.train.MomentumOptimizer(
-            learning_rate=settings.learning_rate,
-            momentum=settings.momentum,
-            use_nesterov=False,
-        ),
-        loss = settings.loss,
-        metrics = []
-    )
+    model = mainNetwork.model
 
     # Make a bunch of tasks for the network to learn
-    mytask = task.createTasks(
-        numInputs=settings.numInputs,
-        numOutputs=settings.numOutputs,
-        numTasks=settings.numTotalTasks
-    )
+    # If there is a file given, learn tasks from the file
+    mytask = None
+    interventions = []
     if settings.dataFile != None:
-        print("Caution: using datafile", settings.dataFile)
+        print("Using datafile", settings.dataFile, "as input")
         mytask = task.taskFromFile(settings.dataFile)
+        assert settings.numInputs == len(mytask[0]['input']), "settings.numInputs must be the length of the inputs"
+        assert settings.numOutputs == len(mytask[0]['teacher']), "settings.numOutputs must be the length of the inputs"
+    
+        # Remove some random tasks from the tasks to be the interventions
+        interventions = [] 
+        assert settings.numInterventions+settings.numTotalTasks <= len(mytask), \
+                        ("Base population+numInterventions too high -- only {} tasks".format(len(mytask)))
 
-    # print("Task", mytask)
+        for x in range(settings.numInterventions):
+            index = random.randrange(0,len(mytask))
+            interventions.append(mytask[index])
+            del(mytask[index])
 
-    # Intervening tasks
-    if (settings.numInterventions > 0):
-        interventions = task.createTasks(
+    else: 
+        mytask = task.createTasks(
             numInputs=settings.numInputs,
             numOutputs=settings.numOutputs,
-            numTasks=settings.numInterventions
+            numTasks=settings.numTotalTasks
         )
+
+        # Intervening tasks
+        if (settings.numInterventions > 0):
+            interventions = task.createTasks(
+                numInputs=settings.numInputs,
+                numOutputs=settings.numOutputs,
+                numTasks=settings.numInterventions
+            )
     
     print("-"*30)
     print("Beginning initial training on base population:")

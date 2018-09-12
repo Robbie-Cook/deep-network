@@ -32,46 +32,48 @@ def createTask(numInputs=settings.numInputs,
     task = {}
     task['input'] = np.array([random.randrange(0,2) for i in range(numInputs)])
 
-    if classifications != None:
-        assert (len(classifications) == 1 and numOutputs == 1) \
-                or math.ceil(math.log10(len(classifications))) == numOutputs , "Number of outputs must be correct for classification"
-        task['teacher'] = np.array([random.randrange(0,len(classifications))])
-    else:
+    if classifications == None: # Generate a teacher for regression (whole number, within the classes declared
         if settings.autoassociative:
             task['teacher'] = copy.copy(task['input'])
         else:
             task['teacher'] = np.array([random.randrange(0,2) for i in range(numOutputs)])
 
+    else: # Generate a teacher for classification
+        assert (len(classifications) == 1 and numOutputs == 1) \
+            or math.ceil(math.log10(len(classifications))) == numOutputs , \
+            "Number of outputs must be correct for classification"
+        task['teacher'] = np.array([random.randrange(0,len(classifications))])
+
     return task
 
 """
-Make a new task from a file
+Make a new task from a file given
 """
 def taskFromFile(datafile):
     myfile = open(datafile)
     mylist = myfile.readlines()
     mylist = [l.replace("\n","").split() for l in mylist]
-   
+    assert len(mylist[0]) == settings.numInputs + settings.numOutputs, "The number of outputs and inputs do "
     tasks = []
     for i,m in enumerate(mylist):
         task = {}
-        task['input'] = [list(m[0:-1]) for m in mylist]
-        task['teacher'] = [list(m[-1]) for m in mylist]
+        task['input'] = list(m[:settings.numInputs])
+        task['teacher'] = list(m[settings.numInputs:])
+
+        # Convert to numbers
+        for x in range(len(task['input'])):
+            task['input'][x] = float(task['input'][x])
+    
+        for x in range(len(task['teacher'])):
+            task['teacher'][x] = float(task['teacher'][x])
+        
         tasks.append(task)
 
-    print(task)
-    # Convert to numbers
-    for i in range(len(task['input'])):
-        for j in range(len(task['input'][i])):
-            task['input'][i][j] = float(task['input'][i][j])
 
-    for i in range(len(task['teacher'])):
-        for j in range(len(task['teacher'][i])):
-            task['teacher'][i][j] = float(task['teacher'][i][j])
-
+    print(tasks)
 
     # for i in len('input')
-    return task
+    return tasks
 
 
 """
