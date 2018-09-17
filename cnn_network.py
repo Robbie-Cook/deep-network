@@ -10,13 +10,22 @@ from tensorflow import keras
 
 import settings
 
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(settings.numInputs, activation=tf.nn.relu),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(settings.numOutputs, activation=tf.nn.softmax)
-])
 
-model.compile(optimizer='adam',
-              loss='mse',
-              metrics=[])
+"""
+Make network
+"""
+def get_network():
+    model = keras.Sequential() # Model is the model to return
+
+    model.add(keras.layers.Dense(settings.numInputs, activation='relu', bias_initializer='RandomNormal'))
+    model.add(keras.layers.Dropout(0.1)) # Dropout
+    model.add(keras.layers.Dense(10, activation='sigmoid', bias_initializer='RandomNormal'))
+    model.add(keras.layers.Dense(10, activation='relu', bias_initializer='RandomNormal'))
+    model.add(keras.layers.Dense(1, activation='relu', bias_initializer='RandomNormal'))
+    
+    model.compile(optimizer=tf.train.AdagradOptimizer(learning_rate=0.1), loss=['mse'])
+
+
+
+    return model
+

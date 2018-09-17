@@ -27,22 +27,15 @@ given in the list, assigned randomly
 @return: Returns a dictionary with input and output e.g. {'input': [0,1,0], 'output': [1,0,0]}
 """
 def createTask(numInputs=settings.numInputs, 
-                numOutputs=settings.numOutputs,
-                classifications=settings.classifications):
+                numOutputs=settings.numOutputs):
     task = {}
     task['input'] = np.array([random.randrange(0,2) for i in range(numInputs)])
 
-    if classifications == None: # Generate a teacher for regression (whole number, within the classes declared
-        if settings.autoassociative:
-            task['teacher'] = copy.copy(task['input'])
-        else:
-            task['teacher'] = np.array([random.randrange(0,2) for i in range(numOutputs)])
-
-    else: # Generate a teacher for classification
-        assert (len(classifications) == 1 and numOutputs == 1) \
-            or math.ceil(math.log10(len(classifications))) == numOutputs , \
-            "Number of outputs must be correct for classification"
-        task['teacher'] = np.array([random.randrange(0,len(classifications))])
+    
+    if settings.autoassociative:
+        task['teacher'] = copy.copy(task['input'])
+    else:
+        task['teacher'] = np.array([random.randrange(0,2) for i in range(numOutputs)])
 
     return task
 
@@ -53,12 +46,11 @@ def taskFromFile(datafile):
     myfile = open(datafile)
     mylist = myfile.readlines()
     mylist = [l.replace("\n","").split() for l in mylist]
-    assert len(mylist[0]) == settings.numInputs + settings.numOutputs, "The number of outputs and inputs do "
     tasks = []
     for i,m in enumerate(mylist):
         task = {}
-        task['input'] = list(m[:settings.numInputs])
-        task['teacher'] = list(m[settings.numInputs:])
+        task['input'] = list(m[:-settings.numOutputs])
+        task['teacher'] = list(m[-settings.numOutputs:])
 
         # Convert to numbers
         for x in range(len(task['input'])):
@@ -70,7 +62,7 @@ def taskFromFile(datafile):
         tasks.append(task)
 
 
-    print(tasks)
+    # print(tasks)
 
     # for i in len('input')
     return tasks
@@ -124,8 +116,13 @@ def train(model,
             "Metric function must be defined"
     if settings.metricFunction == metrics.getGoodness: # If goodness is the metric    
         while(loss < minimumGoodness and epochs < maxEpochs):
-            for i in range(settings.stepSize):
-                model.train_on_batch(X,Y)
+            if settings.minibatching:
+                for i in range(settings.stepSize):
+                    model.train_on_batch(X,Y)
+            else:
+                model.fit(X, Y, batch_size=minibatchSize, epochs=settings.stepSize)
+                                
+
             
             if metricsTask != None:
                 loss = settings.metricFunction(model.predict(x_metric), y_metric)

@@ -49,30 +49,27 @@ summedAverages = np.array([0.0 for i in range(settings.numInterventions+1)])
 
 for i in range(settings.numExperimentRepeats): # repeat entire experiment
 
-
-    # Make the network
-    model = network.model
-
     # Make a bunch of tasks for the network to learn
     # If there is a file given, learn tasks from the file
     mytask = None
     interventions = []
 
-    if settings.dataFile != None:
+    if settings.useFiles: # If using datafile
         print("Using datafile", settings.dataFile, "as input")
         mytask = task.taskFromFile(settings.dataFile)
-        assert settings.numInputs == len(mytask[0]['input']), "settings.numInputs must be the length of the inputs"
-        assert settings.numOutputs == len(mytask[0]['teacher']), "settings.numOutputs must be the length of the inputs"
-    
-        # Remove some random tasks from the tasks to be the interventions
-        interventions = [] 
-        assert settings.numInterventions+settings.numTotalTasks <= len(mytask), \
-                        ("Base population+numInterventions too high -- only {} tasks".format(len(mytask)))
+        interventions = task.taskFromFile(settings.interventionsDataFile)
+        settings.numInterventions = len(interventions)
+        settings.numInputs = len(mytask[0]['input'])
+        settings.numTotalTasks = len(mytask)
 
-        for x in range(settings.numInterventions):
-            index = random.randrange(0,len(mytask))
-            interventions.append(mytask[index])
-            del(mytask[index])
+    
+        # Get interventions from interventions file
+        # interventions = []
+
+        # for x in range(settings.numInterventions):
+        #     index = random.randrange(0,len(mytask))
+        #     interventions.append(mytask[index])
+        #     del(mytask[index])
 
     else: 
         mytask = task.createTasks(
@@ -89,10 +86,14 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
                 numTasks=settings.numInterventions
             )
     
+    # Make the network
+    model = network.get_network()
+
     print("-"*30)
     print("Beginning initial training on base population:")
     task.train(model=model, tasks=mytask, maxEpochs=settings.initialMaxEpochs, minimumGoodness=settings.initialMinimumGoodness)
-    
+        
+
     goodnesses = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions)
     
 

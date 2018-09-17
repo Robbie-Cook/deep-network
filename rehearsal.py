@@ -86,7 +86,7 @@ def sweepTrain(model, itemsLearned, intervention):
     epochs = 0
     if settings.metricFunction == metrics.getGoodness: # goodness
 
-        while loss < settings.minimumGoodness:
+        while loss < settings.minimumGoodness and epochs < settings.maxEpochs:
             sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
             epochs+=settings.bufferRefreshRate
 
@@ -95,14 +95,14 @@ def sweepTrain(model, itemsLearned, intervention):
             if epochs % settings.printRate == 0:
                 print("Training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
     else: 
-        while loss > settings.minimumMAE: # MAE
+        while loss > settings.minimumMAE and epochs < settings.maxEpochs: # MAE
             sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
             epochs+=settings.bufferRefreshRate
 
             if epochs % settings.stepSize == 0:
                 loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
             if epochs % settings.printRate == 0:
-                print("Training... Loss on intervention: {}, , epochs: {}".format(loss, epochs))
+                print("Training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
 
 
 """

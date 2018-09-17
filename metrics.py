@@ -9,6 +9,9 @@ Methods to evaluate the accuracy of predicted values from expected
 
 @author: Robbie Cook
 """
+
+
+
 """
 Method which gets the MAE of the network -- takes the same inputs as getGoodness
 """
