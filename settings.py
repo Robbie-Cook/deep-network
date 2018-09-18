@@ -25,7 +25,7 @@ numInterventions = 10
 numInputs = 32
 numHidden = 16
 numOutputs = 32
-numHiddenLayers = 1
+numHiddenLayers = 8
 numTotalTasks = 5 # size of initial population, if file given, also applies
 autoassociative = False
 
@@ -39,10 +39,10 @@ dropout = 0.0
 minimumMAE = 0.02
 
 
-numExperiments = 20 # How many runs of the experiment, *not* repeats (need to rename)
+numExperiments = 15 # How many runs of the experiment, *not* repeats (need to rename)
 
 stepSize = 2000 # The number of epochs to train before checking & printing
 printRate = 2000 # How many steps to train for before printing
 maxEpochs = 70000
-initialMaxEpochs = 70000 # How many epochs to train for initially
+initialMaxEpochs = 200000 # How many epochs to train for initially
 
