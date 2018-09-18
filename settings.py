@@ -15,6 +15,8 @@ bufferRefreshRate = 1 # How often to refresh the buffer
 minibatching = False # Whether to minibatch
 minibatchSize = 32
 
+reluLayers = False
+
 useFiles = False # If true, data is read from two files, one for interventions and one for base population.
 dataFile = 'tasks/iris_interventions_removed.txt'
 interventionsDataFile = 'tasks/iris_interventions.txt'

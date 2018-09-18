@@ -20,7 +20,11 @@ def get_network():
     model.add(keras.layers.Dense(settings.numInputs, activation='sigmoid', bias_initializer='RandomNormal'))
     for layer in range(settings.numHiddenLayers):
         model.add(keras.layers.Dropout(settings.dropout)) # Dropout
+<<<<<<< HEAD
         model.add(keras.layers.Dense(settings.numHidden, activation='relu', bias_initializer='RandomNormal'))
+=======
+        model.add(keras.layers.Dense(settings.numHidden, activation= ('relu' if settings.reluLayers else 'sigmoid'), bias_initializer='RandomNormal'))
+>>>>>>> 1109d00a88254cc268343fc78e54cfc5c928061a
     model.add(keras.layers.Dense(settings.numOutputs, activation='sigmoid', bias_initializer='RandomNormal'))
 
     model.compile(
