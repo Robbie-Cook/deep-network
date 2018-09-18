@@ -1,0 +1,9 @@
+outputFile: <_io.TextIOWrapper name='data/output16.txt' mode='w' encoding='UTF-8'>
+numOutputs: 32
+numInterventions: 10
+method: sweep
+numExperimentRepeats: 15
+numHiddenLayers: 1
+Base population: 5
+numInputs: 32
+numHidden: 16

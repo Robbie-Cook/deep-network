@@ -91,10 +91,11 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
 
     print("-"*30)
     print("Beginning initial training on base population:")
-    task.train(model=model, tasks=mytask, maxEpochs=settings.initialMaxEpochs, minimumGoodness=settings.initialMinimumGoodness)
+    epochs = task.train(model=model, tasks=mytask, maxEpochs=settings.initialMaxEpochs, minimumGoodness=settings.initialMinimumGoodness)
         
 
-    goodnesses = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions)
+    goodnesses = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions,
+                    initialEpochs=epochs)
     
 
     for j in range(len(goodnesses)):

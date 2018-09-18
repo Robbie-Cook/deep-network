@@ -7,8 +7,9 @@ import tensorflow as tf
 """
 Settings
 """
+countEpochs = False # Whether to count the number of epochs instead of get the goodnesses
 
-method = 'catastrophicForgetting' # sweep, pseudoSweep, catastrophicForgetting
+method = 'pseudoSweep' # sweep, pseudoSweep, catastrophicForgetting
 bufferSize = 4 # Buffer size for sweep and pseudosweep
 bufferRefreshRate = 1 # How often to refresh the buffer
 
@@ -55,3 +56,4 @@ stepSize = 2000 # The number of epochs to train before checking & printing
 printRate = 2000 # How many steps to train for before printing
 maxEpochs = 70000
 initialMaxEpochs = 200000 # How many epochs to train for initially
+

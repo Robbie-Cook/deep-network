@@ -122,7 +122,7 @@ def train(model,
             else:
                 model.fit(X, Y, batch_size=minibatchSize, epochs=settings.stepSize)
                                 
-
+    
             
             if metricsTask != None:
                 loss = settings.metricFunction(model.predict(x_metric), y_metric)
@@ -150,3 +150,4 @@ def train(model,
                 print("Training task.... MAE: {}, Epochs: {}/{}".format(loss, epochs, maxEpochs))
     
     print("Finished training!.... Loss: {}, Epochs: {}/{}".format(loss, epochs, maxEpochs))
+    return epochs

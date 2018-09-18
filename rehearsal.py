@@ -17,8 +17,10 @@ Main function
 
 @param method: the rehearsal method to use (catastrophicForgetting, pseudoSweep, sweep)
 returns an array of the goodnesses
+
+InitialEpochs -- how many epochs the network has already been trained for
 """
-def rehearse(model, method, tasks, interventions):
+def rehearse(model, method, tasks, interventions, initialEpochs):
     methods = ['catastrophicForgetting', 'pseudoSweep', 'sweep']
     assert method in methods, "rehearsal method not supported"
 
@@ -33,24 +35,33 @@ def rehearse(model, method, tasks, interventions):
     print()
 
     goodnesses = [initialGoodness]
+    epochsArray = [initialEpochs]
     learned = copy.copy(tasks)
 
     for i,intervention in enumerate(interventions):      
+        epochs = None
         if method == methods[0]: # Catastrophic Forgetting
-            task.train(model, [intervention])
+            epochs = task.train(model, [intervention])
 
         elif method == methods[1]:# PseudoSweep
             pseudoItems = [createPsuedoItem(model) for i in range(128)]
-            sweepTrain(model=model, itemsLearned=pseudoItems, intervention=intervention)
+            epochs = sweepTrain(model=model, itemsLearned=pseudoItems, intervention=intervention)
 
         elif method == methods[2]: # Sweep
-            sweepTrain(model=model, itemsLearned=learned, intervention=intervention)
+            epochs = sweepTrain(model=model, itemsLearned=learned, intervention=intervention)
             learned.append(intervention)
+        
+        else:
+            raise ValueError("Error: incorrect method chosen")
 
         goodness = metrics.getTaskQuality(model, tasks)
         goodnesses.append(goodness)
+        epochsArray.append(epochs)
         print("\nLoss {} after {} round {}: {}".format(settings.metric, method, i+1, goodness))
         print()
+    
+    if settings.countEpochs:
+        return epochsArray
     return goodnesses
         
 
@@ -103,7 +114,7 @@ def sweepTrain(model, itemsLearned, intervention):
                 loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
             if epochs % settings.printRate == 0:
                 print("Training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
-
+    return epochs
 
 """
 The inner function for sweepTrain
