@@ -1,4 +1,4 @@
-Deep Network
+<h1>Deep Network</h1>
 
 An implementation of a tensorflow neural network with pseudorehearsal implemented.
 The types of pseudorehearsal implemented with this network are sweep rehearsal and sweep pseudorehearsal.
