@@ -1,0 +1,9 @@
+numHidden: 16
+numOutputs: 32
+numInputs: 32
+method: pseudoSweep
+numInterventions: 10
+numHiddenLayers: 1
+numExperiments: 2
+outputFile: <_io.TextIOWrapper name='data/output26.txt' mode='w' encoding='UTF-8'>
+Base population: 5

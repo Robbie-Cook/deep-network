@@ -20,9 +20,14 @@ returns an array of the goodnesses
 
 InitialEpochs -- how many epochs the network has already been trained for
 """
-def rehearse(model, method, tasks, interventions, initialEpochs):
+def rehearse(model, method, tasks, interventions):
     methods = ['catastrophicForgetting', 'pseudoSweep', 'sweep']
     assert method in methods, "rehearsal method not supported"
+
+
+    print("-"*30)
+    print("Beginning initial training on base population:")
+    initialEpochs = task.train(model=model, tasks=tasks, maxEpochs=settings.initialMaxEpochs, minimumGoodness=settings.initialMinimumGoodness)
 
     X = [t['input'] for t in tasks]
     Y = [t['teacher'] for t in tasks]
@@ -60,9 +65,7 @@ def rehearse(model, method, tasks, interventions, initialEpochs):
         print("\nLoss {} after {} round {}: {}".format(settings.metric, method, i+1, goodness))
         print()
     
-    if settings.countEpochs:
-        return epochsArray
-    return goodnesses
+    return {"goodnesses": goodnesses, 'epochs':epochsArray}
         
 
 
@@ -114,6 +117,8 @@ def sweepTrain(model, itemsLearned, intervention):
                 loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
             if epochs % settings.printRate == 0:
                 print("Training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
+    
+    print("Finished training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
     return epochs
 
 """

@@ -39,15 +39,17 @@ if(args.method != None):
 if(args.numHiddenLayers != None):
     settings.method = int(args.numHiddenLayers)
 
-
-
 """
 Main routine
 """
 
+rawData = [] # the output of each epoch for the standard deviation
 summedAverages = np.array([0.0 for i in range(settings.numInterventions+1)])
+summedEpochs = np.array([0.0 for i in range(settings.numInterventions+1)])
 
-for i in range(settings.numExperimentRepeats): # repeat entire experiment
+print("Beginning data collection. Method: ", settings.method)
+
+for i in range(settings.numExperiments): # repeat entire experiment
 
     # Make a bunch of tasks for the network to learn
     # If there is a file given, learn tasks from the file
@@ -88,32 +90,47 @@ for i in range(settings.numExperimentRepeats): # repeat entire experiment
     
     # Make the network
     model = network.get_network()
-
-    print("-"*30)
-    print("Beginning initial training on base population:")
-    epochs = task.train(model=model, tasks=mytask, maxEpochs=settings.initialMaxEpochs, minimumGoodness=settings.initialMinimumGoodness)
-        
-
-    goodnesses = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions,
-                    initialEpochs=epochs)
     
+    mydict = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions)
+    
+    goodnesses = mydict['goodnesses']
+    epochsCount = mydict['epochs']
+
 
     for j in range(len(goodnesses)):
         summedAverages[j] += goodnesses[j]
+        summedEpochs[j] += epochsCount[j]
     
+
+    rawData.append([] + goodnesses) # append individual results for standard deviation
+
     print("\nFinished experiment", i+1)
     print()
 
 # All experiments completed
-averagedAverages = [average/(settings.numExperimentRepeats) for average in summedAverages]
+averagedAverages = [average/(settings.numExperiments) for average in summedAverages]
+averagedEpochCount = [e/(settings.numExperiments) for e in summedEpochs]
+
 print("Finished")
 print("Averages:", averagedAverages)
+print("EpochCount: ", averagedEpochCount)
 
 # Write output files
 directory = 'data'
 outputFileName = myio.get_file_name(directory=directory, name="output")
 outputFile = open(directory+"/"+outputFileName, 'w')
 [outputFile.write(str(i)+"\n") for i in averagedAverages]
+
+## Write the number of epochs taken
+epochsFile = open('epochCounts/' + outputFileName.split(".")[0] + "_count.txt", 'w')
+[epochsFile.write(str(i)+"\n") for i in averagedEpochCount]
+
+# Write raw data (results for each experiment)
+raw_data_file = open('raw_data/' + outputFileName.split(".")[0] + "_raw.txt", 'w')
+for x in rawData:
+    for column in x:
+        raw_data_file.write(str(column) + " ")
+    raw_data_file.write("\n")
 
 # Write info file
 infoFile = open('log/' + outputFileName.split(".")[0] + "_log.txt", 'w')
@@ -125,9 +142,10 @@ data = {
     'numOutputs' : settings.numOutputs,
     'Base population': settings.numTotalTasks,
     'numInterventions' : settings.numInterventions,
-    'numExperimentRepeats': settings.numExperimentRepeats,
+    'numExperiments': settings.numExperiments,
     'numHiddenLayers': settings.numHiddenLayers,
 }
 
 for i in data.keys():
     infoFile.write("{}: {}\n".format(i,data[i]))
+
