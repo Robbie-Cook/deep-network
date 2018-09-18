@@ -112,14 +112,15 @@ for i in range(settings.numExperiments): # repeat entire experiment
 # All experiments completed
 averagedAverages = [average/(settings.numExperiments) for average in summedAverages]
 
-print("Finished")
-print("Averages:", averagedAverages)
 
 # Write output files
 directory = 'data'
 outputFileName = myio.get_file_name(directory=directory, name="output")
 outputFile = open(directory+"/"+outputFileName, 'w')
 [outputFile.write(str(i)+"\n") for i in averagedAverages]
+
+print("Finished -- data saved in", outputFileName)
+print("Averages:", averagedAverages)
 
 ## Write the number of epochs taken
 epochsFile = open('epochCounts/' + outputFileName.split(".")[0] + "_count.txt", 'w')
