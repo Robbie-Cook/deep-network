@@ -148,10 +148,11 @@ data = {
     'numInputs' : settings.numInputs,
     'numHidden' : settings.numHidden,
     'numOutputs' : settings.numOutputs,
-    'Base population': settings.numTotalTasks,
+    'base population': settings.numTotalTasks,
     'numInterventions' : settings.numInterventions,
     'numExperiments': settings.numExperiments,
     'numHiddenLayers': settings.numHiddenLayers,
+    'dropout', settings.dropout
 }
 
 for i in data.keys():
