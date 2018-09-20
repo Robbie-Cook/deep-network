@@ -31,6 +31,7 @@ Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--method')
 parser.add_argument('--numHiddenLayers')
+parser.add_argument('--dropout')
 
 args = parser.parse_args()
 if(args.method != None):
@@ -38,6 +39,10 @@ if(args.method != None):
 
 if(args.numHiddenLayers != None):
     settings.method = int(args.numHiddenLayers)
+
+if(args.dropout != None):
+    settings.dropout = float(args.dropout)
+    print(settings.dropout)
 
 """
 Main routine
