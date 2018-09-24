@@ -38,7 +38,7 @@ if(args.method != None):
     settings.method = args.method
 
 if(args.numHiddenLayers != None):
-    settings.method = int(args.numHiddenLayers)
+    settings.numHiddenLayers = int(args.numHiddenLayers)
 
 if(args.dropout != None):
     settings.dropout = float(args.dropout)
@@ -152,7 +152,8 @@ data = {
     'numInterventions' : settings.numInterventions,
     'numExperiments': settings.numExperiments,
     'numHiddenLayers': settings.numHiddenLayers,
-    'dropout': settings.dropout
+    'dropout': settings.dropout,
+    'adam': settings.adamOptimizer
 }
 
 for i in data.keys():

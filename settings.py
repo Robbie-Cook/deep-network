@@ -12,6 +12,7 @@ method = 'pseudoSweep' # sweep, pseudoSweep, catastrophicForgetting
 bufferSize = 4 # Buffer size for sweep and pseudosweep
 bufferRefreshRate = 1 # How often to refresh the buffer
 
+adamOptimizer = True # Whether to use adam optimizer
 minibatching = False # Whether to minibatch
 minibatchSize = 32
 
@@ -41,7 +42,7 @@ dropout = 0.0
 minimumMAE = 0.02
 
 
-numExperiments = 15 # How many runs of the experiment, *not* repeats (need to rename)
+numExperiments = 20 # How many runs of the experiment, *not* repeats (need to rename)
 
 stepSize = 2000 # The number of epochs to train before checking & printing
 printRate = 2000 # How many steps to train for before printing
