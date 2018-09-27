@@ -51,8 +51,11 @@ def tasksFromFile(datafile):
     tasks = []
     for i,m in enumerate(mylist):
         task = {}
-        task['input'] = list(m[:settings.numInputs])
-        task['teacher'] = list(m[settings.numInputs:])
+        task['input'] = list(m[:-settings.numOutputs])
+        task['teacher'] = list(m[-settings.numOutputs:])
+
+
+        print()
         assert len(task['input']) == settings.numInputs, \
             ("When a file used, numInputs ({}) must match file inputs: {}".format(
                                                                     settings.numInputs, 

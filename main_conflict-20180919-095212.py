@@ -60,11 +60,11 @@ for i in range(settings.numExperiments): # repeat entire experiment
 
     if settings.useFiles: # If using datafile
         print("Using datafile", settings.dataFile, "as input")
-        mytask = task.taskFromFile(settings.dataFile)
-        interventions = task.taskFromFile(settings.interventionsDataFile)
+        mytask = task.tasksFromFile(settings.dataFile)
+        interventions = task.tasksFromFile(settings.interventionsDataFile)
         settings.numInterventions = len(interventions)
         settings.numInputs = len(mytask[0]['input'])
-        settings.numTotalTasks = len(mytask)
+        settings.basePopulationSize = len(mytask)
 
     
         # Get interventions from interventions file
@@ -79,7 +79,7 @@ for i in range(settings.numExperiments): # repeat entire experiment
         mytask = task.createTasks(
             numInputs=settings.numInputs,
             numOutputs=settings.numOutputs,
-            numTasks=settings.numTotalTasks
+            numTasks=settings.basePopulationSize
         )
 
         # Intervening tasks
@@ -144,7 +144,7 @@ data = {
     'numInputs' : settings.numInputs,
     'numHidden' : settings.numHidden,
     'numOutputs' : settings.numOutputs,
-    'Base population': settings.numTotalTasks,
+    'Base population': settings.basePopulationSize,
     'numInterventions' : settings.numInterventions,
     'numExperiments': settings.numExperiments,
     'numHiddenLayers': settings.numHiddenLayers,

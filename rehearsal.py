@@ -81,7 +81,7 @@ item {
 """
 def createPsuedoItem(model):
     # Generate random numbers  
-    item = task.createTask()
+    item = task.createRandomTask()
     test = np.array([item['input']])
     item['teacher'] = model.predict(test)[0]
     return item
@@ -98,6 +98,16 @@ def sweepTrain(model, itemsLearned, intervention):
     Y_intervention = np.array([intervention['teacher']])
     loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
     epochs = 0
+
+
+    # ToDO
+    # 
+    # 
+    # need to change this to a similar way to task.train()
+    #
+    #
+
+
     if settings.metricFunction == metrics.getGoodness: # goodness
 
         while loss < settings.minimumGoodness and epochs < settings.maxEpochs:

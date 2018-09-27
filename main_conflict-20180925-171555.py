@@ -60,41 +60,23 @@ for i in range(settings.numExperiments): # repeat entire experiment
 
     # Make a bunch of tasks for the network to learn
     # If there is a file given, learn tasks from the file
-    mytasks = None
+    mytask = None
     interventions = []
 
     if settings.networkInputType == 'files': # If using datafile as input
-        print("Using datafile", settings.taskFile, "as input")
-        mytasks = task.tasksFromFile(settings.taskFile)
-        interventions = task.tasksFromFile(settings.interventionsFile)
-
-        # If model type is classification, convert the intervention tasks and tasks to
-        # one-hot vectors
-        if settings.modelType == 'classification':
-            assert settings.numOutputs == settings.numClasses, "For classification, the num outputs must be the number of classes"
-
-            for intervention in interventions:
-                intervention['teacher'] = keras.utils.to_categorical(intervention['teacher'], num_classes=settings.numClasses)
-            for task in mytasks:
-                task['teacher'] = keras.utils.to_categorical(task['teacher'], num_classes=settings.numClasses) 
-
-        # Set number of inputs to be number of features in the given dataset
-        settings.numInputs = len(mytasks[0]['input'])
+        print("Using datafile", settings.dataFile, "as input")
+        mytask = task.tasksFromFile(settings.dataFile)
+        interventions = task.tasksFromFile(settings.interventionsDataFile)
 
         # Select a random set of interventions from the intervention file
-        # which is the size given in settings.py
         random.shuffle(interventions)
         interventions = interventions[:settings.numInterventions]
+        
+        settings.numInputs = len(mytask[0]['input'])
+        settings.basePopulationSize = len(mytask)
 
-        # Select a random base population from the input file
-        # which is the size given in settings.py
-        random.shuffle(mytasks)
-        mytasks = mytasks[:settings.basePopulationSize]
-
-        print("Datafile tasks", mytasks, "interventions", interventions)
-    
     elif settings.networkInputType == 'randomGenerated': # Otherwise, random generated input used 
-        mytasks = task.createTasks(
+        mytask = task.createTasks(
             numInputs=settings.numInputs,
             numOutputs=settings.numOutputs,
             numTasks=settings.basePopulationSize
@@ -107,13 +89,11 @@ for i in range(settings.numExperiments): # repeat entire experiment
                 numOutputs=settings.numOutputs,
                 numTasks=settings.numInterventions
             )
-    else:
-        raise ValueError('Incorrect networkInputType')
     
     # Make the network
     model = network.get_network()
     
-    mydict = rehearsal.rehearse(model=model, method=settings.method, tasks=mytasks, interventions=interventions)
+    mydict = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions)
     
     goodnesses = mydict['goodnesses']
     epochsCount = mydict['epochs']
