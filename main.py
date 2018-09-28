@@ -32,6 +32,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--method')
 parser.add_argument('--numHiddenLayers')
 parser.add_argument('--dropout')
+parser.add_argument('--bufferRefreshRate')
+parser.add_argument('--populationSize')
 
 args = parser.parse_args()
 if(args.method != None):
@@ -42,7 +44,17 @@ if(args.numHiddenLayers != None):
 
 if(args.dropout != None):
     settings.dropout = float(args.dropout)
-    print(settings.dropout)
+    print("Dropout changed:", settings.dropout)
+
+if(args.bufferRefreshRate != None):
+    settings.bufferRefreshRate = int(args.bufferRefreshRate)
+    print("bufferRefreshRate changed:", settings.bufferRefreshRate)
+    
+    
+if(args.populationSize != None):
+    settings.populationSize = int(args.populationSize)
+    print("populationSize changed:", settings.populationSize)
+
 
 """
 Main routine
@@ -153,6 +165,7 @@ data = {
     'numExperiments': settings.numExperiments,
     'numHiddenLayers': settings.numHiddenLayers,
     'dropout': settings.dropout,
+    'bufferRefreshRate': settings.bufferRefreshRate,
     'adam': settings.adamOptimizer
 }
 

@@ -12,7 +12,7 @@ method = 'pseudoSweep' # sweep, pseudoSweep, catastrophicForgetting
 bufferSize = 4 # Buffer size for sweep and pseudosweep
 bufferRefreshRate = 1 # How often to refresh the buffer
 
-adamOptimizer = True # Whether to use adam optimizer
+adamOptimizer = False # Whether to use adam optimizer
 minibatching = False # Whether to minibatch
 minibatchSize = 32
 
