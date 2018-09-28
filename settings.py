@@ -33,18 +33,19 @@ reluLayers = True
 dropout = 0.0
 
 numInputs = 4 # How many inputs there are to the network
+numHidden = 16
 numOutputs = 2 # How many outputs the network has. For classification, this is the number of classes there are
 
-numHidden = 16
+
 numHiddenLayers = 1
-basePopulationSize = 5 # size of initial population, if file given, also applies
+basePopulationSize = 20 # size of initial population, if file given, also applies
 numInterventions = 10
 autoassociative = False
 
-numExperiments = 20 # How many runs of the experiment, *not* repeats (need to rename)
+numExperiments = 1 # How many runs of the experiment, *not* repeats (need to rename)
 
-stepSize = 2000 # The number of epochs to train before checking & printing
-printRate = 2000 # How many steps to train for before printing
+stepSize = 1 # The number of epochs to train before checking & printing
+printRate = 1 # How many steps to train for before printing
 maxEpochs = 70000
 initialMaxEpochs = 200000 # How many epochs to train for initially
 

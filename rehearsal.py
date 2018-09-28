@@ -36,8 +36,6 @@ def rehearse(model, method, tasks, interventions):
     print("-"*30)
     print("Starting rehearsal:", method)
     print()
-    print("Initial loss {}: {}".format(settings.metric, initialGoodness))
-    print()
 
     goodnesses = [initialGoodness]
     epochsArray = [initialEpochs]
@@ -47,6 +45,7 @@ def rehearse(model, method, tasks, interventions):
         epochs = None
         if method == methods[0]: # Catastrophic Forgetting
             epochs = task.train(model, [intervention])
+            print("Trained intervention: ", intervention)
 
         elif method == methods[1]:# PseudoSweep
             pseudoItems = [createPsuedoItem(model) for i in range(128)]

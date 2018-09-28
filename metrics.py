@@ -62,13 +62,17 @@ Method which gets the metric of the network
 def getTaskQuality(model, tasks):
     X = np.array([tasks[i]['input'] for i in range(len(tasks))]) # Inputs
     Y = np.array([tasks[i]['teacher'] for i in range(len(tasks))]) # Teaching outputs
-    print("----------")
-   
-    [print(t['teacher']) for t in tasks]
-    
-    print("----------")
+
     if settings.metric == 'goodness':
         return getGoodness(predicted=model.predict(X), expected=Y)
     else:
-        return_value = model.evaluate(X,Y)
+        return_value = model.evaluate(X,Y,verbose=0)
+
+        print("-------------")
+
+        [print(X[i], Y[i]) for i in range(len(X))]
+
+        print("--------------")
+
+
         return return_value[1]

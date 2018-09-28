@@ -74,10 +74,9 @@ for i in range(settings.numExperiments): # repeat entire experiment
             assert settings.numOutputs == settings.numClasses, "For classification, the num outputs must be the number of classes"
 
             for intervention in interventions:
-                intervention['teacher'] = keras.utils.to_categorical(intervention['teacher'], num_classes=settings.numClasses)
-            for task in mytasks:
-                task['teacher'] = keras.utils.to_categorical(task['teacher'], num_classes=settings.numClasses) 
-
+                intervention['teacher'] = keras.utils.to_categorical(intervention['teacher'], num_classes=settings.numClasses)[0]
+            for t in mytasks:
+                t['teacher'] = keras.utils.to_categorical(t['teacher'], num_classes=settings.numClasses)[0]
         # Set number of inputs to be number of features in the given dataset
         settings.numInputs = len(mytasks[0]['input'])
 
@@ -168,7 +167,7 @@ data = {
     'numExperiments': settings.numExperiments,
     'numHiddenLayers': settings.numHiddenLayers,
     'dropout': settings.dropout,
-    'adam': settings.adamOptimizer
+    'inputMethod': settings.networkInputType
 }
 
 for i in data.keys():

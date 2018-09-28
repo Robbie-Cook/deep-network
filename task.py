@@ -121,6 +121,9 @@ def train(model,
           minimumGoodness=settings.minimumGoodness):
 
     epochs = 0
+    X = np.array([x['input'] for x in tasks])
+    Y = np.array([y['teacher'] for y in tasks])
+
     while(not isTrained(model=model, tasks=tasks) and epochs < maxEpochs):
         for i in range(settings.stepSize):
             model.train_on_batch(X,Y)
@@ -128,7 +131,9 @@ def train(model,
         epochs+= settings.stepSize
 
         if epochs % (settings.printRate) == 0:
-            print("Training task.... Goodness: {}, Epochs: {}/{}".format(loss, epochs, maxEpochs))
+            print("Training task.... Goodness: {}, Epochs: {}/{}".format(
+                metrics.getTaskQuality(model=model, tasks=tasks), epochs, maxEpochs))
 
-    print("Finished training!.... Loss: {}, Epochs: {}/{}".format(loss, epochs, maxEpochs))
+    print("Finished training!.... Loss: {}, Epochs: {}/{}".format(
+        metrics.getTaskQuality(model=model, tasks=tasks), epochs, maxEpochs))
     return epochs
