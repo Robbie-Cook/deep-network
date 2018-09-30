@@ -52,8 +52,8 @@ if(args.bufferRefreshRate != None):
     
     
 if(args.populationSize != None):
-    settings.populationSize = int(args.populationSize)
-    print("populationSize changed:", settings.populationSize)
+    settings.numTotalTasks = int(args.populationSize)
+    print("populationSize changed:", settings.numTotalTasks)
 
 
 """

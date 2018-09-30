@@ -38,7 +38,7 @@ metricFunction = None
 
 minimumGoodness = 0.95
 initialMinimumGoodness = minimumGoodness
-dropout = 0.0
+dropout = 0.4
 minimumMAE = 0.02
 
 
