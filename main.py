@@ -52,8 +52,8 @@ if(args.bufferRefreshRate != None):
     
     
 if(args.populationSize != None):
-    settings.populationSize = int(args.populationSize)
-    print("populationSize changed:", settings.populationSize)
+    settings.numTotalTasks = int(args.populationSize)
+    print("populationSize changed:", settings.numTotalTasks)
 
 
 """
@@ -72,31 +72,56 @@ for i in range(settings.numExperiments): # repeat entire experiment
 
     # Make a bunch of tasks for the network to learn
     # If there is a file given, learn tasks from the file
-    mytask = None
+    mytasks = None
     interventions = []
 
-    if settings.useFiles: # If using datafile
-        print("Using datafile", settings.dataFile, "as input")
-        mytask = task.taskFromFile(settings.dataFile)
-        interventions = task.taskFromFile(settings.interventionsDataFile)
-        settings.numInterventions = len(interventions)
-        settings.numInputs = len(mytask[0]['input'])
-        settings.numTotalTasks = len(mytask)
+    if settings.networkInputType == 'files': # If using datafile as input
+        print("Using datafile", settings.taskFile, "as input")
+        print("Using intervention file", settings.interventionsFile, " as interventions")
 
+        mytasks = task.tasksFromFile(settings.taskFile)
+        interventions = task.tasksFromFile(settings.interventionsFile)
+
+                    
+        #Get range of values from tasks for psuedoitem generation
+        X = [t['input'] for t in mytasks]
+        # get columns
+        features = [np.array(X)[:,i] for i in range(len(X[0]))]
+
+        ranges = []
+        for column in features:
+            ranges.append((max(column), min(column)))
+
+        settings.ranges = ranges
+
+        # If model type is classification, convert the intervention tasks and tasks to
+        # one-hot vectors
+        if settings.modelType == 'classification':
+            assert settings.numOutputs == settings.numClasses, "For classification, the num outputs must be the number of classes"
+
+            for intervention in interventions:
+                intervention['teacher'] = keras.utils.to_categorical(intervention['teacher'], num_classes=settings.numClasses)[0]
+            for t in mytasks:
+                t['teacher'] = keras.utils.to_categorical(t['teacher'], num_classes=settings.numClasses)[0]
+        
+        # Set number of inputs to be number of features in the given dataset
+        settings.numInputs = len(mytasks[0]['input'])
+
+        # Select a random set of interventions from the intervention file
+        # which is the size given in settings.py
+        random.shuffle(interventions)
+        interventions = interventions[:settings.numInterventions]
+
+        # Select a random base population from the input file
+        # which is the size given in settings.py
+        random.shuffle(mytasks)
+        mytasks = mytasks[:settings.basePopulationSize]
     
-        # Get interventions from interventions file
-        # interventions = []
-
-        # for x in range(settings.numInterventions):
-        #     index = random.randrange(0,len(mytask))
-        #     interventions.append(mytask[index])
-        #     del(mytask[index])
-
-    else: 
-        mytask = task.createTasks(
+    elif settings.networkInputType == 'randomGenerated': # Otherwise, random generated input used 
+        mytasks = task.createTasks(
             numInputs=settings.numInputs,
             numOutputs=settings.numOutputs,
-            numTasks=settings.numTotalTasks
+            numTasks=settings.basePopulationSize
         )
 
         # Intervening tasks
@@ -106,11 +131,13 @@ for i in range(settings.numExperiments): # repeat entire experiment
                 numOutputs=settings.numOutputs,
                 numTasks=settings.numInterventions
             )
+    else:
+        raise ValueError('Incorrect networkInputType')
     
     # Make the network
     model = network.get_network()
     
-    mydict = rehearsal.rehearse(model=model, method=settings.method, tasks=mytask, interventions=interventions)
+    mydict = rehearsal.rehearse(model=model, method=settings.method, tasks=mytasks, interventions=interventions)
     
     goodnesses = mydict['goodnesses']
     epochsCount = mydict['epochs']
@@ -160,11 +187,12 @@ data = {
     'numInputs' : settings.numInputs,
     'numHidden' : settings.numHidden,
     'numOutputs' : settings.numOutputs,
-    'base population': settings.numTotalTasks,
+    'base population': settings.basePopulationSize,
     'numInterventions' : settings.numInterventions,
     'numExperiments': settings.numExperiments,
     'numHiddenLayers': settings.numHiddenLayers,
     'dropout': settings.dropout,
+    'inputMethod': settings.networkInputType,
     'bufferRefreshRate': settings.bufferRefreshRate,
     'relu': settings.reluLayers
 }
