@@ -194,6 +194,7 @@ data = {
     'dropout': settings.dropout,
     'inputMethod': settings.networkInputType,
     'bufferRefreshRate': settings.bufferRefreshRate,
+    'relu': settings.reluLayers
 }
 
 for i in data.keys():
