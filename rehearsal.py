@@ -31,7 +31,7 @@ def rehearse(model, method, tasks, interventions):
 
     X = [t['input'] for t in tasks]
     Y = [t['teacher'] for t in tasks]
-    initialGoodness = metrics.getTaskQuality(model, tasks)
+    initialGoodness = metrics.getAccuracyOnTask(model, tasks)
 
     print("-"*30)
     print("Starting rehearsal:", method)
@@ -45,10 +45,10 @@ def rehearse(model, method, tasks, interventions):
         epochs = None
         if method == methods[0]: # Catastrophic Forgetting
             epochs = task.train(model, [intervention])
-            print("Trained intervention: ", intervention)
+            print("Trained intervention to accuracy: ", metrics.getAccuracyOnTask(model, [intervention]))
 
         elif method == methods[1]:# PseudoSweep
-            pseudoItems = [createPsuedoItem(model) for i in range(128)]
+            pseudoItems = [createPsuedoItem(model, settings.ranges) for i in range(128)]
             epochs = sweepTrain(model=model, itemsLearned=pseudoItems, intervention=intervention)
 
         elif method == methods[2]: # Sweep
@@ -58,7 +58,7 @@ def rehearse(model, method, tasks, interventions):
         else:
             raise ValueError("Error: incorrect method chosen")
 
-        goodness = metrics.getTaskQuality(model, tasks)
+        goodness = metrics.getAccuracyOnTask(model, tasks)
         goodnesses.append(goodness)
         epochsArray.append(epochs)
         print("\nLoss {} after {} round {}: {}".format(settings.metric, method, i+1, goodness))
@@ -77,11 +77,24 @@ item {
     'input': [0,0,1,...] # random input
     'teacher: [0.3, 0.04,...] # corresponding output
 }
+
+If ranges given e.g. [(0,1), (0,1), (0,1), (0,1)], generates a random value in the range
 """
-def createPsuedoItem(model):
-    # Generate random numbers  
-    item = task.createRandomTask()
-    test = np.array([item['input']])
+def createPsuedoItem(model, ranges=None):
+    # Generate random numbers
+    test = None
+    item = {}
+    # if files are input, get ranges and make sure those are the chosen items 
+    if ranges==None:
+        item = task.createRandomTask()
+        test = np.array([item['input']])
+    else:
+        test = []
+        for range in ranges:
+            test.append(random.uniform(range[0],range[1]))
+        item['input'] = test
+        test = np.array([test])
+    
     item['teacher'] = model.predict(test)[0]
     return item
 
@@ -95,7 +108,6 @@ If the itemsLearned are pseudoItems, then pseudoRehearsal is implemented
 def sweepTrain(model, itemsLearned, intervention):
     X_intervention = np.array([intervention['input']])
     Y_intervention = np.array([intervention['teacher']])
-    loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
     epochs = 0
 
 
@@ -106,28 +118,14 @@ def sweepTrain(model, itemsLearned, intervention):
     #
     #
 
+    while not task.isTrained(model=model, tasks=[intervention]):
+        sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
+        epochs+=settings.bufferRefreshRate
 
-    if settings.metricFunction == metrics.getGoodness: # goodness
-
-        while loss < settings.minimumGoodness and epochs < settings.maxEpochs:
-            sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
-            epochs+=settings.bufferRefreshRate
-
-            if epochs % settings.stepSize == 0:
-                loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
-            if epochs % settings.printRate == 0:
-                print("Training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
-    else: 
-        while loss > settings.minimumMAE and epochs < settings.maxEpochs: # MAE
-            sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
-            epochs+=settings.bufferRefreshRate
-
-            if epochs % settings.stepSize == 0:
-                loss = settings.metricFunction(model.predict(X_intervention),Y_intervention)
-            if epochs % settings.printRate == 0:
-                print("Training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
+        if epochs % settings.printRate == 0:
+            print("Training... Loss on intervention: {}, epochs: {}".format(metrics.getAccuracyOnTask(model, np.array([intervention])), epochs))
     
-    print("Finished training... Loss on intervention: {}, epochs: {}".format(loss, epochs))
+    print("Finished training... Loss on intervention: {}, epochs: {}".format(metrics.getAccuracyOnTask(model, np.array([intervention])), epochs))
     return epochs
 
 """

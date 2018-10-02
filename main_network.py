@@ -32,7 +32,7 @@ def get_network():
                 use_nesterov=False,
             ),
             loss = 'mse',
-            metrics = []
+            metrics = ['mae']
         )
     elif settings.modelType == 'adam':
         model.compile(
@@ -44,7 +44,7 @@ def get_network():
         opt = keras.optimizers.Adam()
         model.compile(loss=keras.losses.categorical_crossentropy,
                 optimizer=opt,
-                metrics=['accuracy'])
+                metrics=['categorical_accuracy'])
     else:
         raise Exception("Error: Incorrect model type")
 

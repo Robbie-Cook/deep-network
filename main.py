@@ -65,8 +65,22 @@ for i in range(settings.numExperiments): # repeat entire experiment
 
     if settings.networkInputType == 'files': # If using datafile as input
         print("Using datafile", settings.taskFile, "as input")
+        print("Using intervention file", settings.interventionsFile, " as interventions")
+
         mytasks = task.tasksFromFile(settings.taskFile)
         interventions = task.tasksFromFile(settings.interventionsFile)
+
+                    
+        #Get range of values from tasks for psuedoitem generation
+        X = [t['input'] for t in mytasks]
+        # get columns
+        features = [np.array(X)[:,i] for i in range(len(X[0]))]
+
+        ranges = []
+        for column in features:
+            ranges.append((max(column), min(column)))
+
+        settings.ranges = ranges
 
         # If model type is classification, convert the intervention tasks and tasks to
         # one-hot vectors
@@ -77,6 +91,7 @@ for i in range(settings.numExperiments): # repeat entire experiment
                 intervention['teacher'] = keras.utils.to_categorical(intervention['teacher'], num_classes=settings.numClasses)[0]
             for t in mytasks:
                 t['teacher'] = keras.utils.to_categorical(t['teacher'], num_classes=settings.numClasses)[0]
+        
         # Set number of inputs to be number of features in the given dataset
         settings.numInputs = len(mytasks[0]['input'])
 
@@ -89,8 +104,6 @@ for i in range(settings.numExperiments): # repeat entire experiment
         # which is the size given in settings.py
         random.shuffle(mytasks)
         mytasks = mytasks[:settings.basePopulationSize]
-
-        print("Datafile tasks", mytasks, "interventions", interventions)
     
     elif settings.networkInputType == 'randomGenerated': # Otherwise, random generated input used 
         mytasks = task.createTasks(

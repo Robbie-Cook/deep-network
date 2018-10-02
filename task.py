@@ -96,7 +96,7 @@ Returns true if network is trained to criterion, false otherwise
 """
 def isTrained(model, tasks):
 
-    met = metrics.getTaskQuality(model=model, tasks=tasks)
+    met = metrics.getAccuracyOnTask(model=model, tasks=tasks)
     if settings.metric == 'goodness':
         # Goodness
         return met > settings.minimumGoodness
@@ -132,8 +132,9 @@ def train(model,
 
         if epochs % (settings.printRate) == 0:
             print("Training task.... Goodness: {}, Epochs: {}/{}".format(
-                metrics.getTaskQuality(model=model, tasks=tasks), epochs, maxEpochs))
+                metrics.getAccuracyOnTask(model=model, tasks=tasks), epochs, maxEpochs))
 
     print("Finished training!.... Loss: {}, Epochs: {}/{}".format(
-        metrics.getTaskQuality(model=model, tasks=tasks), epochs, maxEpochs))
+        metrics.getAccuracyOnTask(model=model, tasks=tasks), epochs, maxEpochs))
     return epochs
+
