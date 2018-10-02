@@ -24,6 +24,7 @@ metric = 'mae' # Which metric function to use -- goodness cannot be used for non
 
 minimumGoodness = 0.95
 initialMinimumGoodness = minimumGoodness
+dropout = 0.4
 minimumMAE = 0.02
 minimumAccuracy = 0.95
 
