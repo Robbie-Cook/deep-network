@@ -166,7 +166,6 @@ data = {
     'numHiddenLayers': settings.numHiddenLayers,
     'dropout': settings.dropout,
     'bufferRefreshRate': settings.bufferRefreshRate,
-    'adam': settings.adamOptimizer,
     'relu': settings.reluLayers
 }
 
