@@ -34,6 +34,7 @@ parser.add_argument('--numHiddenLayers')
 parser.add_argument('--dropout')
 parser.add_argument('--bufferRefreshRate')
 parser.add_argument('--populationSize')
+parser.add_argument('--auxNetwork')
 
 args = parser.parse_args()
 if(args.method != None):
@@ -52,8 +53,12 @@ if(args.bufferRefreshRate != None):
     
     
 if(args.populationSize != None):
-    settings.numTotalTasks = int(args.populationSize)
-    print("populationSize changed:", settings.numTotalTasks)
+    settings.populationSize = int(args.populationSize)
+    print("populationSize changed:", settings.populationSize)
+
+if(args.auxNetwork != None):
+    settings.auxNetwork = bool(args.auxNetwork)
+    print("auxNetwork changed:", settings.auxNetwork)
 
 
 """
@@ -77,10 +82,16 @@ for i in range(settings.numExperiments): # repeat entire experiment
 
     if settings.networkInputType == 'files': # If using datafile as input
         print("Using datafile", settings.taskFile, "as input")
-        print("Using intervention file", settings.interventionsFile, " as interventions")
 
         mytasks = task.tasksFromFile(settings.taskFile)
-        interventions = task.tasksFromFile(settings.interventionsFile)
+
+        interventions = None
+        if settings.interventionsFile == 'randomTask': # Set interventions as a random task
+            print("Using a random binary task as interventions")
+            interventions = task.createRandomTasks(settings.numInterventions)
+        else:
+            print("Using intervention file", settings.interventionsFile, " as interventions")
+            interventions = task.tasksFromFile(settings.interventionsFile)
 
                     
         #Get range of values from tasks for psuedoitem generation
@@ -93,6 +104,7 @@ for i in range(settings.numExperiments): # repeat entire experiment
             ranges.append((max(column), min(column)))
 
         settings.ranges = ranges
+
 
         # If model type is classification, convert the intervention tasks and tasks to
         # one-hot vectors
@@ -118,7 +130,7 @@ for i in range(settings.numExperiments): # repeat entire experiment
         mytasks = mytasks[:settings.basePopulationSize]
     
     elif settings.networkInputType == 'randomGenerated': # Otherwise, random generated input used 
-        mytasks = task.createTasks(
+        mytasks = task.createRandomTasks(
             numInputs=settings.numInputs,
             numOutputs=settings.numOutputs,
             numTasks=settings.basePopulationSize
@@ -126,7 +138,7 @@ for i in range(settings.numExperiments): # repeat entire experiment
 
         # Intervening tasks
         if (settings.numInterventions > 0):
-            interventions = task.createTasks(
+            interventions = task.createRandomTasks(
                 numInputs=settings.numInputs,
                 numOutputs=settings.numOutputs,
                 numTasks=settings.numInterventions
@@ -194,7 +206,9 @@ data = {
     'dropout': settings.dropout,
     'inputMethod': settings.networkInputType,
     'bufferRefreshRate': settings.bufferRefreshRate,
-    'relu': settings.reluLayers
+    'relu': settings.reluLayers,
+    'useRanges': settings.useRanges,
+    'auxNetwork': settings.auxNetwork
 }
 
 for i in data.keys():

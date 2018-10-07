@@ -39,6 +39,17 @@ def createRandomTask(numInputs=settings.numInputs,
 
     return task
 
+
+"""
+Create a set of tasks using createTask()
+"""
+def createRandomTasks(
+                numTasks,
+                numInputs=settings.numInputs,
+                numOutputs=settings.numOutputs):
+    assert numTasks > 0, "Number of tasks must be greater than 0"
+    return [createRandomTask(numInputs, numOutputs) for i in range(numTasks)]
+
 """
 Make a new task from a file given
 
@@ -69,15 +80,6 @@ def tasksFromFile(datafile):
     return tasks
 
 
-"""
-Create a set of tasks using createTask()
-"""
-def createTasks(
-                numTasks,
-                numInputs=settings.numInputs,
-                numOutputs=settings.numOutputs):
-    assert numTasks > 0, "Number of tasks must be greater than 0"
-    return [createRandomTask(numInputs, numOutputs) for i in range(numTasks)]
 
 """
 Make tasks based on an X,Y array given
@@ -125,14 +127,16 @@ def train(model,
     Y = np.array([y['teacher'] for y in tasks])
 
     while(not isTrained(model=model, tasks=tasks) and epochs < maxEpochs):
-        for i in range(settings.stepSize):
+        for _ in range(settings.stepSize):
             model.train_on_batch(X,Y)
 
         epochs+= settings.stepSize
 
         if epochs % (settings.printRate) == 0:
-            print("Training task.... Goodness: {}, Epochs: {}/{}".format(
+            print("Training task.... Metric value: {}, Epochs: {}/{}".format(
                 metrics.getAccuracyOnTask(model=model, tasks=tasks), epochs, maxEpochs))
+
+        
 
     print("Finished training!.... Loss: {}, Epochs: {}/{}".format(
         metrics.getAccuracyOnTask(model=model, tasks=tasks), epochs, maxEpochs))

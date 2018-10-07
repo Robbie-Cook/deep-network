@@ -1,33 +1,26 @@
 #!/bin/bash
 
-<<<<<<< HEAD
+python3 main.py --method=catastrophicForgetting --numHiddenLayers=2
+python3 main.py --method=pseudoSweep --numHiddenLayers=2
+python3 main.py --method=pseudoSweep --auxNetwork=True --numHiddenLayers=2
+python3 main.py --method=sweep --numHiddenLayers=2
 
-python3 main.py --method=catastrophicForgetting --populationSize=1 --numHiddenLayers=1
-python3 main.py --method=pseudoSweep --populationSize=1 --numHiddenLayers=1
-python3 main.py --method=sweep --populationSize=1 --numHiddenLayers=1
+python3 main.py --method=catastrophicForgetting --numHiddenLayers=4
+python3 main.py --method=pseudoSweep --numHiddenLayers=4
+python3 main.py --method=pseudoSweep --auxNetwork=True --numHiddenLayers=4
+python3 main.py --method=sweep --numHiddenLayers=4
 
-python3 main.py --method=catastrophicForgetting --populationSize=5 --numHiddenLayers=1
-python3 main.py --method=pseudoSweep --populationSize=5 --numHiddenLayers=1
-python3 main.py --method=sweep --populationSize=5 --numHiddenLayers=1
+python3 main.py --method=catastrophicForgetting --numHiddenLayers=6
+python3 main.py --method=pseudoSweep --numHiddenLayers=6
+python3 main.py --method=pseudoSweep --auxNetwork=True --numHiddenLayers=6
+python3 main.py --method=sweep --numHiddenLayers=6
 
-python3 main.py --method=catastrophicForgetting --populationSize=20 --numHiddenLayers=1
-python3 main.py --method=pseudoSweep --populationSize=20 --numHiddenLayers=1
-python3 main.py --method=sweep --populationSize=20 --numHiddenLayers=1
+python3 main.py --method=catastrophicForgetting --numHiddenLayers=8
+python3 main.py --method=pseudoSweep --numHiddenLayers=8
+python3 main.py --method=pseudoSweep --auxNetwork=True --numHiddenLayers=8
+python3 main.py --method=sweep --numHiddenLayers=8
 
-
-
-python3 main.py --method=catastrophicForgetting --populationSize=1 --numHiddenLayers=2
-python3 main.py --method=pseudoSweep --populationSize=1 --numHiddenLayers=2
-python3 main.py --method=sweep --populationSize=1 --numHiddenLayers=2
-=======
-python3 main.py --method=pseudoSweep --bufferRefreshRate=100
-python3 main.py --method=sweep --bufferRefreshRate=100
->>>>>>> master
-
-python3 main.py --method=catastrophicForgetting --populationSize=5 --numHiddenLayers=2
-python3 main.py --method=pseudoSweep --populationSize=5 --numHiddenLayers=2
-python3 main.py --method=sweep --populationSize=5 --numHiddenLayers=2
-
-python3 main.py --method=catastrophicForgetting --populationSize=20 --numHiddenLayers=2
-python3 main.py --method=pseudoSweep --populationSize=20 --numHiddenLayers=2
-python3 main.py --method=sweep --populationSize=20 --numHiddenLayers=2
+python3 main.py --method=catastrophicForgetting --numHiddenLayers=10
+python3 main.py --method=pseudoSweep --numHiddenLayers=10
+python3 main.py --method=pseudoSweep --auxNetwork=True --numHiddenLayers=10
+python3 main.py --method=sweep --numHiddenLayers=10

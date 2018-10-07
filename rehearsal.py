@@ -4,6 +4,7 @@ import task
 import numpy as np
 import copy
 import random
+import autoencoder
 
 """
 Rehearsal.py
@@ -16,9 +17,7 @@ Currently implements psuedoSweep and sweep, catastrophic forgetting
 Main function
 
 @param method: the rehearsal method to use (catastrophicForgetting, pseudoSweep, sweep)
-returns an array of the goodnesses
-
-InitialEpochs -- how many epochs the network has already been trained for
+returns an array of the goodnesses on the base population
 """
 def rehearse(model, method, tasks, interventions):
     methods = ['catastrophicForgetting', 'pseudoSweep', 'sweep']
@@ -27,7 +26,19 @@ def rehearse(model, method, tasks, interventions):
 
     print("-"*30)
     print("Beginning initial training on base population:")
+    print("------------")
+
+    print(tasks)
+
+    print("------------")
     initialEpochs = task.train(model=model, tasks=tasks, maxEpochs=settings.initialMaxEpochs, minimumGoodness=settings.initialMinimumGoodness)
+
+    aux = None
+    if settings.auxNetwork and settings.method == 'pseudoSweep':
+        items = [x['input'] for x in tasks]
+        print("Training Autoencoder")
+        autoencoder.train(  np.array(items) ) 
+
 
     X = [t['input'] for t in tasks]
     Y = [t['teacher'] for t in tasks]
@@ -85,17 +96,20 @@ def createPsuedoItem(model, ranges=None):
     test = None
     item = {}
     # if files are input, get ranges and make sure those are the chosen items 
-    if ranges==None:
+    if ranges==None or settings.useRanges == False:
         item = task.createRandomTask()
-        test = np.array([item['input']])
     else:
         test = []
         for range in ranges:
             test.append(random.uniform(range[0],range[1]))
         item['input'] = test
-        test = np.array([test])
-    
-    item['teacher'] = model.predict(test)[0]
+
+    # if auxilliary network is to be used to generate the pseudoitems
+    if settings.auxNetwork:
+        item['input'] = autoencoder.predict( np.array([item['input']]) )[0]
+
+            
+    item['teacher'] = model.predict( np.array([item['input']]) )[0]
     return item
 
 
@@ -110,15 +124,9 @@ def sweepTrain(model, itemsLearned, intervention):
     Y_intervention = np.array([intervention['teacher']])
     epochs = 0
 
-
-    # ToDO
-    # 
-    # 
-    # need to change this to a similar way to task.train()
-    #
-    #
-
     while not task.isTrained(model=model, tasks=[intervention]):
+        if epochs > settings.maxEpochs:
+            break
         sweep_run_epoch(model=model, itemsLearned=itemsLearned, intervention=intervention)
         epochs+=settings.bufferRefreshRate
 
