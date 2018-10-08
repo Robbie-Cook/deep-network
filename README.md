@@ -8,3 +8,7 @@ These are implemented as per *Catastrophic Forgetting, Rehearsal, and Pseudorehe
 My experimentation focusses on exploring what happens as the network is expanded, and as deep network techniques are added.
 
 The main file is `main.py`.  `rehearsal.py` contains the rehearsal implementation. `settings.py` contains most of the settings.
+
+Look at bash.sh for an example of an experiment ran.
+
+The code was executed on a series of 6-core VPS machines.
